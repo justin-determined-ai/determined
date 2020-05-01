@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"github.com/docker/docker/api/types"
+	dcontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"github.com/labstack/echo"
@@ -144,32 +145,43 @@ func (c *containerManager) overwriteSpec(
 		slotIds = append(slotIds, strconv.Itoa(d.ID))
 	}
 	spec.RunSpec.ContainerConfig.Labels[dockerContainerDevicesLabel] = strings.Join(slotIds, ",")
-	if len(cont.Devices) > 0 && cont.Devices[0].Type == device.GPU {
-		spec.RunSpec.HostConfig.Runtime = nvidiaRuntime
+
+	spec = c.overwriteSpecforGPUs(cont, spec)
+
+	return spec
+}
+
+func (c *containerManager) overwriteSpecforGPUs(
+	cont cproto.Container, spec container.Spec,
+) container.Spec {
+	useGPU := len(cont.Devices) > 0 && cont.Devices[0].Type == device.GPU
+	spec.RunSpec.ContainerConfig.Env = append(
+		spec.RunSpec.ContainerConfig.Env,
+		fmt.Sprintf("DET_USE_GPU=%t", useGPU),
+	)
+	if useGPU {
+		var uuids []string
+		for _, d := range cont.Devices {
+			uuids = append(uuids, d.UUID)
+		}
+		request := dcontainer.DeviceRequest{
+			Driver:       "nvidia",
+			Capabilities: [][]string{{"gpu", "compute", "utility"}},
+			DeviceIDs:    uuids,
+		}
+		spec.RunSpec.HostConfig.DeviceRequests = append(spec.RunSpec.HostConfig.DeviceRequests, request)
 	}
 	return spec
 }
 
 func (c *containerManager) containerEnvVars(cont cproto.Container) []string {
-	visibleDevices := "none"
-	useGPU := false
 	var slotIds []string
-	var slotUUIDs []string
 	for _, d := range cont.Devices {
 		slotIds = append(slotIds, strconv.Itoa(d.ID))
-
-		if useGPU = d.Type == device.GPU; useGPU {
-			slotUUIDs = append(slotUUIDs, d.UUID)
-		}
-	}
-	if len(slotUUIDs) > 0 {
-		visibleDevices = strings.Join(slotUUIDs, ",")
 	}
 	return []string{
 		fmt.Sprintf("DET_CONTAINER_ID=%s", cont.ID),
-		fmt.Sprintf("DET_USE_GPU=%t", useGPU),
 		fmt.Sprintf("DET_SLOT_IDS=[%s]", strings.Join(slotIds, ",")),
-		fmt.Sprintf("NVIDIA_VISIBLE_DEVICES=%s", visibleDevices),
 	}
 }
 
