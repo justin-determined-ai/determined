@@ -1,4 +1,3 @@
-
 .. _upgrades-troubleshootings:
 
 .. _upgrades:
@@ -45,7 +44,7 @@ All users should also upgrade the CLI by running
 Be sure to do this for every user or virtualenv that has installed the
 old version of the CLI.
 
-.. _troubleshoot: 
+.. _troubleshoot:
 
 Troubleshooting Tips
 --------------------
@@ -60,7 +59,7 @@ run:
 
 .. code::
 
-   docker run --runtime=nvidia --rm nvidia/cuda:10.0-runtime nvidia-smi
+   docker run --gpus all --rm nvidia/cuda:10.0-runtime nvidia-smi
 
 You should see output that describes the GPUs available on the agent
 instance, such as:
@@ -108,4 +107,4 @@ CUDA 9.0:
 
 .. code::
 
-   docker run --runtime=nvidia --rm nvidia/cuda:9.0-runtime nvidia-smi
+   docker run --gpus all --rm nvidia/cuda:9.0-runtime nvidia-smi
