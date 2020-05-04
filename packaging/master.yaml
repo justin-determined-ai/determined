@@ -33,7 +33,7 @@
 #  agent_docker_network: default
 
 ## The docker runtime to use for the agent when using dynamic agent. Defaults to "nvidia".
-#  agent_docker_runtime: nvidia
+#  agent_docker_runtime: runc
 
 ## The docker image to use for the agent when using dynamic agents. This value
 ## must be configured.
