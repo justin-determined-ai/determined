@@ -17,19 +17,19 @@ Version 0.12.4
 
 - Authentication sessions now expire every 7 days.
 
-- Improve log messages for Keras trial callbacks.
+- Improve log messages for ``tf.keras`` trial callbacks.
 
 - Add ``nvidia-container-toolkit`` support.
 
 - Fix an error in the experimental ``bert_glue_pytorch`` example.
 
-- The ``tf.keras` examples for the Native and Trial APIs now refer to the same model.
+- The ``tf.keras`` examples for the Native and Trial APIs now refer to the same model.
 
-- Add a topic guide explaining Determined's approach to :ref:`elastic-infra`.
+- Add a topic guide explaining Determined's approach to :ref:`elastic-infra-index`.
 
 - Add a topic guide explaining the :ref:`native-api`.
 
-- UI: The Determined favicon acquires a small dot when Determined slots are in use.
+- UI: The Determined favicon acquires a small dot when any slots are in use.
 
 - UI: Fix an issue with command sorting in the WebUI.
 
